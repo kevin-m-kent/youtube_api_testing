@@ -1,4 +1,5 @@
 library(httr2)
+library(jsonlite)
 
 # set up dev api access on google, choosing desktop for youtube data api
 API_KEY <- Sys.getenv("API_Key")
@@ -17,32 +18,23 @@ client <- oauth_client(id=  client_id,
                       auth = "body",   # header or body
                       name = "youtube_ONE_video_ALL_comments")
 
-req <- request("https://www.googleapis.com/upload/youtube/v3/videos")
+req <- request("https://www.googleapis.com/upload/youtube/v3/videos?part=snippet&part=status")
 
-snippet_string <- c(list("snippet.title" = "test",
-                       "snippet.description" = "description_test",
-                       "snippet.tags"="test_tag",
-                       "snippet.category" = "test_cat"),
-"status" = list("privacyStatus" = "private")
-) %>%
+snippet_string <- list(snippet = list("title" = unbox("kevin video final"),
+                       "description" = unbox("description_test"),
+                       "tags" = "kevin,kent"),
+status = list("privacyStatus" = unbox("private"))) %>%
   jsonlite::toJSON()
 
-resp <- httr2::req_oauth_auth_code( req,
-                                   client = client,
-                                   auth_url = auth_url,
-                                   scope = scope, 
-                                   pkce = FALSE,
-                                   auth_params = list(scope=scope, response_type="code"),
-                                   token_params = list(scope=scope, grant_type="authorization_code"),
-                                   host_name = "localhost",
-                                   host_ip = "127.0.0.1",
-                                   port = 8080, 
-) %>%
+metadata <- tempfile()
+writeLines(snippet_string, metadata)
+
+resp <- httr2::req_oauth_client_credentials(req, client) %>%
   req_body_multipart(
-    list("media" = curl::form_file("test_video.mp4"))) #,
-  #"snippet" = curl::form_data(snippet_string)))
-  
-esp %>%
+    list(
+      metadata = curl::form_file(path = metadata, type = "application/json; charset=UTF-8"),
+      media = curl::form_file("kkent intro.mp4"))
+  ) %>%
   req_perform()
 
 
