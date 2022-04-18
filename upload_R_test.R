@@ -16,7 +16,7 @@ client <- oauth_client(id=  client_id,
                       secret = client_secret,
                       key =  API_KEY,
                       auth = "body",   # header or body
-                      name = "youtube_ONE_video_ALL_comments")
+                      name = "video_upload_api")
 
 req <- request("https://www.googleapis.com/upload/youtube/v3/videos?part=snippet&part=status")
 
