@@ -6,6 +6,8 @@ API_KEY <- Sys.getenv("API_Key")
 client_id <- Sys.getenv("client_id")
 client_secret <- Sys.getenv("client_secret")
 
+
+
 base_url  <- "https://www.googleapis.com/youtube/v3/playlists"
 auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
 token_url="https://oauth2.googleapis.com/token"
@@ -17,6 +19,8 @@ client <- oauth_client(id=  client_id,
                       key =  API_KEY,
                       auth = "body",   # header or body
                       name = "video_upload_api")
+
+# api guide https://developers.google.com/youtube/v3/docs/videos/insert#go
 
 req <- request("https://www.googleapis.com/upload/youtube/v3/videos?part=snippet&part=status")
 
