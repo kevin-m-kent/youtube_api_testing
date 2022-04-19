@@ -6,12 +6,8 @@ API_KEY <- Sys.getenv("API_Key")
 client_id <- Sys.getenv("client_id")
 client_secret <- Sys.getenv("client_secret")
 
-
-
-base_url  <- "https://www.googleapis.com/youtube/v3/playlists"
-auth_url = "https://accounts.google.com/o/oauth2/v2/auth"
 token_url="https://oauth2.googleapis.com/token"
-scope = paste0("https://www.googleapis.com/auth/youtube"," ","https://www.googleapis.com/auth/youtube.force-ssl")
+scope = paste0("https://www.googleapis.com/auth/youtube")
 
 client <- oauth_client(id=  client_id,
                       token_url  = token_url,
@@ -34,7 +30,18 @@ status = list("privacyStatus" = unbox("private"))) %>%
 metadata <- tempfile()
 writeLines(snippet_string, metadata)
 
-resp <- httr2::req_oauth_client_credentials(req, client) %>%
+resp <- httr2::req_oauth_auth_code( req,
+                                    client = client,
+                                    auth_url = auth_url,
+                                    scope = scope, 
+                                    pkce = FALSE,
+                                    auth_params = list(scope=scope, response_type="code"),
+                                    token_params = list(scope=scope, grant_type="authorization_code"),
+                                    host_name = "localhost",
+                                    host_ip = "127.0.0.1",
+                                    #port = httpuv::randomPort()
+                                    port = 8080, 
+) %>%
   req_body_multipart(
     list(
       metadata = curl::form_file(path = metadata, type = "application/json; charset=UTF-8"),
