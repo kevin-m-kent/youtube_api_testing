@@ -21,6 +21,7 @@ client <- oauth_client(id=  client_id,
                       name = "video_upload_api")
 
 # api guide https://developers.google.com/youtube/v3/docs/videos/insert#go
+# additional parts need to be specified as arguments in the request string
 
 req <- request("https://www.googleapis.com/upload/youtube/v3/videos?part=snippet&part=status")
 
