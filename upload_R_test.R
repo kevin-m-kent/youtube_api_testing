@@ -6,8 +6,9 @@ API_KEY <- Sys.getenv("API_Key")
 client_id <- Sys.getenv("client_id")
 client_secret <- Sys.getenv("client_secret")
 
-token_url="https://oauth2.googleapis.com/token"
-scope = paste0("https://www.googleapis.com/auth/youtube")
+token_url <- "https://oauth2.googleapis.com/token"
+auth_url <- "https://accounts.google.com/o/oauth2/v2/auth"
+scope = "https://www.googleapis.com/auth/youtube"
 
 client <- oauth_client(id=  client_id,
                       token_url  = token_url,
@@ -48,6 +49,7 @@ resp <- httr2::req_oauth_auth_code( req,
       media = curl::form_file("kkent intro.mp4"))
   ) %>%
   req_perform()
+
 
 
 
