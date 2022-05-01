@@ -22,10 +22,11 @@ client <- oauth_client(id=  client_id,
 
 req <- request("https://www.googleapis.com/upload/youtube/v3/videos?part=snippet&part=status")
 
-snippet_string <- list(snippet = list("title" = unbox("kevin video final"),
+snippet_string <- list(snippet = list("title" = unbox("video kids test"),
                        "description" = unbox("description_test"),
                        "tags" = "kevin,kent"),
-status = list("privacyStatus" = unbox("private"))) %>%
+status = list("privacyStatus" = unbox("private"),
+              "selfDeclaredMadeForKids" = unbox("false"))) %>%
   jsonlite::toJSON()
 
 metadata <- tempfile()
