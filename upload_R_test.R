@@ -46,10 +46,69 @@ resp <- httr2::req_oauth_auth_code( req,
   req_body_multipart(
     list(
       metadata = curl::form_file(path = metadata, type = "application/json; charset=UTF-8"),
-      media = curl::form_file("kkent intro.mp4"))
+      media = curl::form_file("Week2 DI Capstone Kevin kent.mp4"))
   ) %>%
   req_perform()
 
+videoId <- resp %>%
+  resp_body_json() %>%
+  pluck("id")
+
+
+# assign to playlist ------------------------------------------------------
+
+playlist_req <- request("https://www.googleapis.com/youtube/v3/playlists?part=contentDetails&mine=true")
+
+resp <- httr2::req_oauth_auth_code( playlist_req,
+                                    client = client,
+                                    auth_url = auth_url,
+                                    scope = scope, 
+                                    pkce = FALSE,
+                                    auth_params = list(scope=scope, response_type="code"),
+                                    token_params = list(scope=scope, grant_type="authorization_code"),
+                                    host_name = "localhost",
+                                    host_ip = "127.0.0.1",
+                                    #port = httpuv::randomPort()
+                                    port = 8080, 
+) %>%
+  # # req_body_multipart(
+  #    list(
+  #      metadata = curl::form_file(path = metadata, type = "application/json; charset=UTF-8"),
+  #      media = curl::form_file("kkent intro.mp4"))
+  #  ) %>%
+  req_perform()
+
+playlist_id <- resp %>%
+  resp_body_json() %>%
+  pluck("items", 1, "id")
+
+update_req <- request(glue::glue("https://youtube.googleapis.com/youtube/v3/playlistItems?part=snippet"))
+
+snippet_string <- list(snippet = list("playlistId" = unbox(playlist_id), "resourceId" = list(
+  "kind" = unbox("youtube#video"),
+  "videoId" = unbox(videoId)))
+) %>%
+  jsonlite::toJSON()
+
+metadata <- tempfile()
+writeLines(snippet_string, metadata)
+
+update_resp <- httr2::req_oauth_auth_code( update_req,
+                                    client = client,
+                                    auth_url = auth_url,
+                                    scope = scope, 
+                                    pkce = FALSE,
+                                    auth_params = list(scope=scope, response_type="code"),
+                                    token_params = list(scope=scope, grant_type="authorization_code"),
+                                    host_name = "localhost",
+                                    host_ip = "127.0.0.1",
+                                    #port = httpuv::randomPort()
+                                    port = 8080, 
+) %>%
+  req_body_file(
+      path = metadata, type = "application/json; charset=UTF-8"
+  ) %>%
+  req_perform()
 
 
 
