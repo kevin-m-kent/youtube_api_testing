@@ -1,6 +1,7 @@
 ## Description
 
-Figuring out youtube upload and listing APIs to automate video upload from zoom. 
+Figuring out youtube upload and listing APIs to automate video upload from zoom,
+using {[httr2](https://httr2.r-lib.org)}.
 
 ## Workflow
 
